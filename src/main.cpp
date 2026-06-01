@@ -438,12 +438,17 @@ int main() {
         }
 
         // --- Rysowanie orbit (shader linii) i elektronów (punkt 8 — animacja) ---
-        for (int i = 0; i < 3; i++) {
-            float orbitRadius = 2.5f + i * 1.2f;
+        for (int i = 0; i < 2; i++) {
+            float orbitRadius = 2.0f + i * 0.8f;
 
             glm::mat4 baseOrbitModel = sceneTransform;
-            baseOrbitModel = glm::rotate(baseOrbitModel, glm::radians(i * 60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseOrbitModel = glm::rotate(baseOrbitModel, glm::radians(i * 45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            float tiltX = (i == 0) ? 25.0f : -25.0f;
+            float tiltZ = (i == 0) ? 15.0f : -15.0f;
+
+            baseOrbitModel = glm::rotate(baseOrbitModel, glm::radians(tiltX), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseOrbitModel = glm::rotate(baseOrbitModel, glm::radians(tiltZ), glm::vec3(0.0f, 0.0f, 1.0f));
+
 
             // Orbita — prosty shader bez oświetlenia
             lineShader.use();
@@ -468,9 +473,11 @@ int main() {
             glBindVertexArray(sphereVAO);
             float speed = 2.0f + i * 0.5f;
 
-            for (int e = 0; e < 2; e++) {
+            int electronCount = (i == 1) ? 4 : 2;
+
+            for (int e = 0; e < electronCount; e++) {
                 glm::mat4 modelElectron = baseOrbitModel;
-                float phaseShift = e * PI;
+                float phaseShift = e * (2.0f * PI / electronCount);
 
                 modelElectron = glm::rotate(modelElectron, currentFrame * speed + phaseShift, glm::vec3(0.0f, 1.0f, 0.0f));
                 modelElectron = glm::translate(modelElectron, glm::vec3(orbitRadius, 0.0f, 0.0f));
